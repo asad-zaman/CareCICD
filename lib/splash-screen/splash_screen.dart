@@ -32,7 +32,7 @@ class SplashScreen extends StatelessWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 0,
+            bottom: 50,
             child: Consumer(builder: (context, ref, _) {
               ref.listen(isLoadingProvider, (previous, next) {
                 if (next) {
@@ -43,7 +43,10 @@ class SplashScreen extends StatelessWidget {
                               const LandingScreenDashboard()));
                 }
               });
-              return Lottie.asset('assets/lotties/ic_dot_loader.json');
+              return Image.asset(
+                'assets/images/ic_loading.gif',
+                height: 100,
+              );
             }),
           )
         ],

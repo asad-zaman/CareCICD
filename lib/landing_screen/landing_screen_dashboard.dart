@@ -3,6 +3,7 @@ import 'package:care/landing_screen/caregiver_screen.dart';
 import 'package:care/landing_screen/service_screen.dart';
 import 'package:care/landing_screen/landing_screen_provider.dart';
 import 'package:care/landing_screen/vision_screen.dart';
+import 'package:care/service_selection/service_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -47,7 +48,7 @@ class LandingScreenDashboard extends StatelessWidget {
                 onTap: () => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const HomeScreen())),
+                        builder: (context) => const ServiceSelectionScreen())),
                 child: const Text(
                   'Skip for Now',
                   style: TextStyle(decoration: TextDecoration.underline),
@@ -82,7 +83,7 @@ class LandingScreenDashboard extends StatelessWidget {
         width: isActive ? 50 : 10,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(8)),
-          color: isActive ? const Color(0XFF6BC4C9) : const Color(0XFFEAEAEA),
+          color: isActive ? const Color(0XFF318DA7) : const Color(0XFF6BC4C9),
         ),
       ),
     );
