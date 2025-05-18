@@ -3,6 +3,7 @@ import 'package:care/landing_screen/caregiver_screen.dart';
 import 'package:care/landing_screen/service_screen.dart';
 import 'package:care/landing_screen/landing_screen_provider.dart';
 import 'package:care/landing_screen/vision_screen.dart';
+import 'package:care/login/login_screen.dart';
 import 'package:care/service_selection/service_selection_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -64,7 +65,7 @@ class ServiceSelectionScreen extends StatelessWidget {
                 onTap: () => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const HomeScreen())),
+                        builder: (context) => const LoginScreen())),
                 child: const Text(
                   'Skip for Now',
                   style: TextStyle(decoration: TextDecoration.underline),
@@ -131,7 +132,14 @@ class ServiceSelectionScreen extends StatelessWidget {
         final seletedIndex = ref.watch(selectedOptionProvider);
 
         return MaterialButton(
-          onPressed: seletedIndex != null ? () {} : null,
+          onPressed: seletedIndex != null
+              ? () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()));
+                }
+              : null,
           height: 50,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10)),
