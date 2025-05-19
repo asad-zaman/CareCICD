@@ -1,14 +1,14 @@
-import 'package:care/registration/registration_screen.dart';
+import 'package:care/otp/otp_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../common/input_util.dart';
 import '../common/input_validator.dart';
-import 'login_provider.dart';
+import 'registration_provider.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class RegistrationScreen extends StatelessWidget {
+  const RegistrationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(80),
+                    padding: const EdgeInsets.fromLTRB(80, 80, 80, 50),
                     child: Image.asset('assets/images/ic_app_logo.png'),
                   ),
                   Expanded(
@@ -43,7 +43,7 @@ class LoginScreen extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              'Log In',
+                              'Sign Up',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -78,9 +78,36 @@ class LoginScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 10),
                           child: Consumer(builder: (context, ref, _) {
+                            final errorText = ref.watch(mobileErrorProvider);
+
+                            return TextFormField(
+                              obscureText: false,
+                              decoration: InputUtil.buildInputDecoration(
+                                labelText: 'Mobile',
+                                errorText: errorText,
+                                prefixIcon: const Icon(Icons.phone),
+                                isConfirm: true,
+                                isMismatch: true,
+                                isObscure: false,
+                              ),
+                              validator: (value) =>
+                                  InputValidator.validateMobile(value),
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              onChanged: (value) {
+                                ref.read(mobileProvider.notifier).state = value;
+                              },
+                            );
+                          }),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          child: Consumer(builder: (context, ref, _) {
                             final isPasswordObscure =
-                                ref.watch(passwordObscureStateProvider);
-                            final errorText = ref.watch(passwordErrorProvider);
+                                ref.watch(normalPasswordObscureStateProvider);
+                            final errorText =
+                                ref.watch(normalPasswordErrorProvider);
 
                             return TextFormField(
                               obscureText: isPasswordObscure,
@@ -93,62 +120,76 @@ class LoginScreen extends StatelessWidget {
                                 isObscure: isPasswordObscure,
                                 toggleVisibility: () {
                                   ref
-                                      .read(
-                                          passwordObscureStateProvider.notifier)
+                                      .read(normalPasswordObscureStateProvider
+                                          .notifier)
                                       .state = !isPasswordObscure;
                                 },
                               ),
                               validator: (value) =>
-                                  InputValidator.validatePassword(value),
+                                  value == null || value.isEmpty
+                                      ? 'Error'
+                                      : null,
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
                               onChanged: (value) {
-                                ref.read(passwordProvider.notifier).state =
-                                    value;
+                                ref
+                                    .read(normalPasswordProvider.notifier)
+                                    .state = value;
                               },
                             );
                           }),
                         ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Consumer(builder: (context, ref, _) {
-                                    final rememberMe =
-                                        ref.watch(rememberMeProvider);
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          child: Consumer(builder: (context, ref, _) {
+                            final isPasswordObscure =
+                                ref.watch(confirmPasswordObscureStateProvider);
+                            final errorText =
+                                ref.watch(confirmPasswordErrorProvider);
 
-                                    return Checkbox(
-                                      value: rememberMe,
-                                      onChanged: (value) {
-                                        ref
-                                            .read(rememberMeProvider.notifier)
-                                            .state = value ?? false;
-                                      },
-                                    );
-                                  }),
-                                  const Text('Remember Me'),
-                                ],
+                            return TextFormField(
+                              obscureText: isPasswordObscure,
+                              decoration: InputUtil.buildInputDecoration(
+                                labelText: 'Confirm Password',
+                                errorText: errorText,
+                                prefixIcon: const Icon(Icons.lock_outline),
+                                isConfirm: true,
+                                isMismatch: true,
+                                isObscure: isPasswordObscure,
+                                toggleVisibility: () {
+                                  ref
+                                      .read(confirmPasswordObscureStateProvider
+                                          .notifier)
+                                      .state = !isPasswordObscure;
+                                },
                               ),
-                              GestureDetector(
-                                onTap: () {},
-                                child: const Text(
-                                  'Forgot Password?',
-                                  style: TextStyle(
-                                      decoration: TextDecoration.underline),
-                                ),
-                              ),
-                            ],
-                          ),
+                              validator: (value) =>
+                                  InputValidator.validateConfirmPassword(
+                                      ref.read(normalPasswordProvider), value),
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              onChanged: (value) {
+                                ref
+                                    .read(confirmPasswordProvider.notifier)
+                                    .state = value;
+                              },
+                            );
+                          }),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 10),
                           child: Consumer(builder: (context, ref, _) {
                             return MaterialButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const OtpScreen(),
+                                  ),
+                                );
+                              },
                               height: 50,
                               minWidth: double.maxFinite,
                               shape: const RoundedRectangleBorder(
@@ -158,35 +199,32 @@ class LoginScreen extends StatelessWidget {
                               color: const Color(0xFF13228C),
                               disabledColor: const Color(0xFFCDD8F0),
                               child: const Text(
-                                'Login',
+                                'Signup',
                                 style: TextStyle(color: Colors.white),
                               ),
                             );
                           }),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 30),
                           child: RichText(
                             text: TextSpan(
-                                text: 'Don’t have any account? ',
-                                style: const TextStyle(color: Colors.grey),
-                                children: [
-                                  TextSpan(
-                                    text: 'Sign Up',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const RegistrationScreen()));
-                                      },
+                              text: 'Already have an account? ',
+                              style: const TextStyle(color: Colors.grey),
+                              children: [
+                                TextSpan(
+                                  text: 'Log In',
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    decoration: TextDecoration.underline,
                                   ),
-                                ]),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.pop(context);
+                                    },
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
